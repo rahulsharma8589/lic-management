@@ -19,7 +19,6 @@ const Dashboard = () => {
     const fetchData = async () => {
       try {
         // 1. Get All Clients
-        // NOTE: Change this URL to your Render URL when you deploy!
         const clientRes = await axios.get('http://localhost:5000/api/clients');
         
         // 2. Get All Policies
@@ -27,7 +26,6 @@ const Dashboard = () => {
 
         // 3. Calculate Stats
         const policies = policyRes.data;
-        // Sum up all premiums (converting strings to numbers)
         const totalPrem = policies.reduce((acc, curr) => acc + (Number(curr.premiumAmount) || 0), 0);
 
         setStats({
@@ -36,7 +34,7 @@ const Dashboard = () => {
           totalPremium: totalPrem
         });
 
-        // 4. Save the last 5 clients (Reverse them to show newest first)
+        // 4. Save the last 5 clients (Reverse to show newest first)
         setRecentClients(clientRes.data.slice(-5).reverse());
         setLoading(false);
 
@@ -113,6 +111,7 @@ const Dashboard = () => {
                       <th className="px-6 py-3 font-medium">Mobile</th>
                       <th className="px-6 py-3 font-medium">City/Address</th>
                       <th className="px-6 py-3 font-medium">PAN Number</th>
+                      <th className="px-6 py-3 font-medium">Actions</th>
                     </tr>
                   </thead>
                   <tbody className="divide-y divide-gray-100 text-sm text-gray-700">
@@ -123,11 +122,19 @@ const Dashboard = () => {
                           <td className="px-6 py-4">{client.mobile}</td>
                           <td className="px-6 py-4 truncate max-w-[150px]">{client.address}</td>
                           <td className="px-6 py-4 font-mono text-xs">{client.panNumber || "N/A"}</td>
+                          <td className="px-6 py-4">
+                             <Link 
+                               to={`/client/${client._id}`} 
+                               className="text-blue-500 hover:text-blue-700 font-bold text-xs"
+                             >
+                               View Profile →
+                             </Link>
+                          </td>
                         </tr>
                       ))
                     ) : (
                       <tr>
-                        <td colSpan="4" className="px-6 py-8 text-center text-gray-400">
+                        <td colSpan="5" className="px-6 py-8 text-center text-gray-400">
                           No clients found. Click "New Policy" to add one!
                         </td>
                       </tr>
@@ -143,4 +150,4 @@ const Dashboard = () => {
   );
 };
 
-export default Dashboard;
+export default Dashboard;      
