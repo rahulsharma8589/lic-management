@@ -2,16 +2,12 @@ import React, { useEffect } from 'react';
 
 const PolicyForm = ({ data, updateData }) => {
 
-  // --- SMART LOGIC: Auto-calculate Maturity Date ---
+  // Auto-calculate Maturity Date
   useEffect(() => {
     if (data.commencementDate && data.policyTerm) {
       const doc = new Date(data.commencementDate);
       const term = parseInt(data.policyTerm);
-      
-      // Maturity Date = DOC + Term Years
       const maturity = new Date(doc.setFullYear(doc.getFullYear() + term));
-      
-      // Format to YYYY-MM-DD for the input field
       const formattedDate = maturity.toISOString().split('T')[0];
       
       updateData(prev => ({ ...prev, maturityDate: formattedDate }));
@@ -69,12 +65,21 @@ const PolicyForm = ({ data, updateData }) => {
         />
       </div>
 
-      {/* Dates (The Smart Part) */}
+      {/* Dates */}
       <div>
         <label className="block text-sm font-medium text-gray-700 mb-1">DOC (Commencement)</label>
         <input 
           type="date" name="commencementDate" value={data.commencementDate || ''} onChange={handleChange}
           className="w-full p-2 border border-gray-300 rounded focus:ring-2 focus:ring-blue-500 outline-none"
+        />
+      </div>
+
+      {/* --- NEW FIELD: Next Due Date --- */}
+      <div>
+        <label className="block text-sm font-bold text-blue-700 mb-1">Next Premium Due</label>
+        <input 
+          type="date" name="nextDueDate" value={data.nextDueDate || ''} onChange={handleChange}
+          className="w-full p-2 border-2 border-blue-200 rounded focus:ring-2 focus:ring-blue-500 outline-none bg-blue-50"
         />
       </div>
 

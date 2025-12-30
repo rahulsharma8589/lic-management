@@ -24,7 +24,6 @@ const AddPolicy = () => {
   // --- SUBMIT FUNCTION ---
   const handleSubmit = async () => {
     try {
-      // Basic Validation
       if(!formData.fullName || !formData.policyNumber) {
         alert("Please fill at least Name and Policy Number!");
         return;
@@ -32,9 +31,8 @@ const AddPolicy = () => {
 
       alert("Submitting data... please wait.");
       
-      // 1. Prepare Client Data (Multipart Form Data for Files)
+      // 1. Prepare Client Data
       const clientData = new FormData();
-      // Append text fields
       clientData.append('fullName', formData.fullName);
       clientData.append('dob', formData.dob);
       clientData.append('mobile', formData.mobile);
@@ -46,30 +44,31 @@ const AddPolicy = () => {
       clientData.append('ifscCode', formData.ifscCode);
       clientData.append('bankName', formData.bankName);
       
-      // Append Files (Only if they exist)
       if (formData.photo) clientData.append('photo', formData.photo);
       if (formData.adharFront) clientData.append('adharFront', formData.adharFront);
       if (formData.adharBack) clientData.append('adharBack', formData.adharBack);
       if (formData.panCard) clientData.append('panCard', formData.panCard);
       if (formData.bankPassbook) clientData.append('bankPassbook', formData.bankPassbook);
 
-      // 2. Call API to Create Client
-      // Note: Make sure your backend port matches (default 5000)
+      // 2. Create Client
       const clientRes = await axios.post('http://localhost:5000/api/clients', clientData, {
         headers: { 'Content-Type': 'multipart/form-data' }
       });
       
       const newClientId = clientRes.data._id;
-      console.log("Client Created ID:", newClientId);
 
-      // 3. Prepare Policy Data (JSON is fine here)
+      // 3. Prepare Policy Data
       const policyData = {
-        clientId: newClientId, // Link to the client we just made
+        clientId: newClientId,
         policyNumber: formData.policyNumber,
         agencyCode: formData.agencyCode,
         planName: formData.planName,
         tableNumber: formData.tableNumber,
         commencementDate: formData.commencementDate,
+        
+        // ✅ THIS LINE WAS MISSING OR NOT SAVED
+        nextDueDate: formData.nextDueDate, 
+        
         policyTerm: formData.policyTerm,
         premiumPayingTerm: formData.premiumPayingTerm,
         maturityDate: formData.maturityDate,
@@ -78,11 +77,11 @@ const AddPolicy = () => {
         paymentMode: formData.paymentMode
       };
 
-      // 4. Call API to Create Policy
+      // 4. Create Policy
       await axios.post('http://localhost:5000/api/policies', policyData);
 
       alert("Success! Policy and Client added successfully! 🎉");
-      window.location.href = "/"; // Go back to Dashboard
+      navigate('/'); 
 
     } catch (error) {
       console.error("Error submitting:", error);
